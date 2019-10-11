@@ -1,0 +1,16 @@
+*.class
+.idea
+target/
+.ensime
+.ensime_cache/
+.DS_Store
+.env
+ops/aws/packaged-template.sit.yaml
+ops/aws/seUpload/__pycache__/
+ops/aws/seUpload/artifact.zip
+ops/aws/seUpload/artifacts.txt
+ops/aws/seUpload/index.pyc
+ops/aws/seUpload/purple-pay-settlement-pubsub-0.1.0-SNAPSHOT/
+.bloop/
+.metals/
+ops/aws/packaged-template.yaml
