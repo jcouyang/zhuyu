@@ -3,22 +3,15 @@ version: '3.4'
 x-app:
   &default-app
   image: hseeberger/scala-sbt:8u181_2.12.8_1.2.8
-  command: sbt run
+  command: sbt examples/run
   working_dir: /app
   volumes:
     - "./:/app"
     - "sbt-ivy2-cache:/root/.ivy2"
   environment:
     - LOG_LEVEL
-    - PURPLE_PAY_DE_FILES=purple-pay-de-files
-    - TZ=Australia/Melbourne
-    - PURPLE_PAY_PUBSUB_CLIENT_SECRET
-    - AWS_ACCESS_KEY_ID=minio
-    - AWS_SECRET_ACCESS_KEY=minio001
     - AWS_REGION=us-east-1
-    - S3_ENDPOINT_URL=http://s3:9000
   depends_on:
-    - s3
     - sqs
 services:
   app:
@@ -26,33 +19,10 @@ services:
   test:
     << : *default-app
     command: sbt clean coverage test coverageReport
-  it:
-    << : *default-app
-    command: sbt it:test
-    depends_on:
-      - s3-prep
   sqs:
     image: softwaremill/elasticmq
     ports:
       - 9324:9324
-  package:
-    << : *default-app
-    command: sbt universal:packageBin
-  s3-prep:
-    image: minio/mc
-    entrypoint: /bin/sh
-    command: -c "sleep 3 && mc config host add minio http://s3:9000 minio minio001 && mc mb minio/purple-pay-de-files"
-    depends_on:
-      - s3
-  s3:
-    image: minio/minio
-    command: server /data
-    environment:
-      - MINIO_ACCESS_KEY=minio
-      - MINIO_SECRET_KEY=minio001
-      - MINIO_REGION=us-east-1
-    ports:
-      - 9000
 volumes:
   sbt-ivy2-cache:
     external: true
