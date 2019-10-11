@@ -22,3 +22,6 @@ lazy val core = (project in file("core"))
       aws ++
       log4s
   )
+
+lazy val example = (project in file("example"))
+  .dependsOn(core)

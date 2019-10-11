@@ -2,10 +2,6 @@ version: 2.1
 description: Scala sbt pipeline
 orbs:
   sbt: jcouyang/sbt@dev:0.2.0
-executors:
-  scala:
-    docker:
-      - image: circleci/openjdk:8-jdk
 workflows:
   version: 2
   test:
@@ -15,7 +11,6 @@ workflows:
   release:
     jobs:
       - sbt/test:
-          executor: scala
           filters:
             tags:
               only: /^v[0-9.]+.*/
