@@ -1,14 +1,18 @@
 package us.oyanglul.zhuyu
 package jobs
 import io.circe.generic.auto._
-import cats.syntax.functor._
 import us.oyanglul.zhuyu.models.{Event, PaymentDebited, PaymentInited}
+import org.http4s._
+import org.http4s.dsl.io._
+import org.http4s.client.dsl.io._
 
 trait OnPaymentInited {
   implicit val onPaymentInited =
-    new Job[PaymentInited, effects.HasSQS] {
-      def distribute(message: PaymentInited) = {
-        spread[Event](PaymentDebited(123)).void
-      }
+    new Job[PaymentInited, effects.HasSQS with effects.HasHttp4s] {
+      override def distribute(message: PaymentInited) =
+        for {
+          status <- effects.Http4s(_.status(GET(uri"https://blog.oyanglul.us")))
+          _ <- spread[Event](PaymentDebited(status.code))
+        } yield ()
     }
 }

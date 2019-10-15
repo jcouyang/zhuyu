@@ -17,8 +17,8 @@ object Event {
     }
 }
 
-case class PaymentInited(batchId: Int) extends Event
-case class PaymentDebited(batchId: Int) extends Event
-case class DebitEntryFileUploaded(batchId: Int) extends Event
-case class BillingServiceNotified(batchId: Int) extends Event
-case class DebitEntryProcessed(batchId: Int) extends Event
+case class PaymentInited(id: Int) extends Event
+case class PaymentDebited(id: Int) extends Event
+case class DebitEntryFileUploaded(id: Int) extends Event
+case class BillingServiceNotified(id: Int) extends Event
+case class DebitEntryProcessed(id: Int) extends Event

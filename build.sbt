@@ -19,9 +19,28 @@ lazy val core = (project in file("core"))
       cats ++
       fs2 ++
       circe ++
-      aws ++
+      awsSqs ++
       log4s
   )
 
-lazy val example = (project in file("example"))
+lazy val example = project
+  .settings(
+    name := "zhuyu-example",
+    libraryDependencies ++= logback
+  )
+  .dependsOn(core, `effect-http4s`, `effect-s3`)
+
+lazy val `effect-http4s` = project
+  .settings(
+    name := "zhuyu-effect-doobie",
+    libraryDependencies ++= http4s
+  )
   .dependsOn(core)
+
+lazy val `effect-s3` = project
+  .settings(
+    name := "zhuyu-effect-s3",
+    libraryDependencies ++= awsS3
+  )
+  .dependsOn(core)
+

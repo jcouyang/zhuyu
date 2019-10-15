@@ -14,8 +14,18 @@ object Dependencies {
     "co.fs2" %% "fs2-io" % "1.0.4"
   )
 
-  lazy val aws = Seq(
-    "com.amazonaws" % "aws-java-sdk-sqs" % "1.11.623",
+  lazy val http4s = {
+    val http4sVersion = "0.20.11"
+    Seq(
+    "org.http4s" %% "http4s-dsl" % http4sVersion,
+    "org.http4s" %% "http4s-blaze-client" % http4sVersion
+    )
+  }
+
+  lazy val awsSqs = Seq(
+    "com.amazonaws" % "aws-java-sdk-sqs" % "1.11.623"
+  )
+  lazy val awsS3 = Seq(
     "com.amazonaws" % "aws-java-sdk-s3" % "1.11.623"
   )
   lazy val ciris = Seq(
