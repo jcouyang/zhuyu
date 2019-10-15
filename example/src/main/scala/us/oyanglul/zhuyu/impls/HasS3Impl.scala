@@ -11,6 +11,6 @@ trait HasS3Impl extends effects.HasS3 {
     .withCredentials(
       new AWSStaticCredentialsProvider(new BasicAWSCredentials("x", "x")))
     .withEndpointConfiguration(
-      new EndpointConfiguration("http://localhost:9324", "us-east-1"))
+      new EndpointConfiguration("http://localhost:9000", "us-east-1"))
     .build()
 }

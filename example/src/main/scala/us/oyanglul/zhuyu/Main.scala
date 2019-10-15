@@ -10,19 +10,26 @@ import fs2._
 object Main extends IOApp {
   val logger = org.log4s.getLogger
 
-  object impl extends impls.HasSQSImpl with impls.HasHttp4sImpl
+  object impl
+      extends impls.HasSQSImpl
+      with impls.HasHttp4sImpl
+      with impls.HasS3Impl
+      with impls.HasDoobieImpl
 
   def run(args: List[String]): IO[ExitCode] = {
     Stream
       .repeatEval {
-        Worker.work[Event, HasSQS with HasHttp4s].run(impl).map {
-          _.separate match {
-            case (errors, _) =>
-              errors.map { e =>
-                logger.error(e.getMessage)
-              }
+        Worker
+          .work[Event, HasSQS with HasHttp4s with HasS3 with HasDoobie]
+          .run(impl)
+          .map {
+            _.separate match {
+              case (errors, _) =>
+                errors.map { e =>
+                  logger.error(e.getMessage)
+                }
+            }
           }
-        }
       }
       .compile
       .drain

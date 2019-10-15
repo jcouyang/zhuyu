@@ -7,6 +7,9 @@ object Dependencies {
     "com.olegpy" %% "meow-mtl" % "0.2.0",
   )
 
+  lazy val doobie = Seq(
+    "org.tpolecat" %% "doobie-core" % "0.8.4",
+  )
   lazy val shapeless = Seq(
     "com.chuusai" %% "shapeless" % "2.3.3"
   )

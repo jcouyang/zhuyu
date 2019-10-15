@@ -1,6 +1,6 @@
 import Dependencies._
 
-ThisBuild / scalaVersion     := "2.12.8"
+ThisBuild / scalaVersion     := "2.12.10"
 ThisBuild / version          := "0.1.0-SNAPSHOT"
 ThisBuild / organization     := "us.oyanglul"
 ThisBuild / scalafmtOnCompile := true
@@ -26,9 +26,11 @@ lazy val core = (project in file("core"))
 lazy val example = project
   .settings(
     name := "zhuyu-example",
-    libraryDependencies ++= logback
+    libraryDependencies ++= logback ++ http4s ++ Seq(
+      "org.http4s" %% "http4s-core" % "0.20.11"
+    )
   )
-  .dependsOn(core, `effect-http4s`, `effect-s3`)
+  .dependsOn(core, `effect-http4s`, `effect-s3`, `effect-doobie`)
 
 lazy val `effect-http4s` = project
   .settings(
@@ -44,3 +46,9 @@ lazy val `effect-s3` = project
   )
   .dependsOn(core)
 
+lazy val `effect-doobie` = project
+  .settings(
+    name := "zhuyu-effect-doobie",
+    libraryDependencies ++= doobie
+  )
+  .dependsOn(core)

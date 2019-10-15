@@ -18,7 +18,7 @@ object Event {
 }
 
 case class PaymentInited(id: Int) extends Event
-case class PaymentDebited(id: Int) extends Event
-case class DebitEntryFileUploaded(id: Int) extends Event
+case class PaymentDebited(status: Int) extends Event
+case class DebitEntryFileUploaded(etag: String) extends Event
 case class BillingServiceNotified(id: Int) extends Event
 case class DebitEntryProcessed(id: Int) extends Event

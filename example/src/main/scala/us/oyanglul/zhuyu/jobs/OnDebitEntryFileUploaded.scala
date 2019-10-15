@@ -1,8 +1,10 @@
 package us.oyanglul.zhuyu
 package jobs
 
-import cats.syntax.functor._
 import io.circe.generic.auto._
+import org.http4s._
+import org.http4s.dsl.io._
+import org.http4s.client.dsl.io._
 import us.oyanglul.zhuyu.models.{
   BillingServiceNotified,
   DebitEntryFileUploaded,
@@ -11,9 +13,12 @@ import us.oyanglul.zhuyu.models.{
 
 trait OnDebitEntryFileUploaded {
   implicit val onDebitEntryFileUploaded =
-    new Job[DebitEntryFileUploaded, effects.HasSQS] {
-      def distribute(message: DebitEntryFileUploaded) = {
-        spread[Event](BillingServiceNotified(123)).void
-      }
+    new Job[DebitEntryFileUploaded, effects.HasSQS with effects.HasHttp4s] {
+      def distribute(message: DebitEntryFileUploaded) =
+        for {
+          status <- effects.Http4s(
+            _.status(GET(uri"https://blog.oyanglul.us/not-exist")))
+          _ <- spread[Event](BillingServiceNotified(status.code))
+        } yield ()
     }
 }

@@ -1,14 +1,15 @@
 package us.oyanglul.zhuyu
 package jobs
 
-import cats.effect.IO
 import us.oyanglul.zhuyu.models.DebitEntryProcessed
+import effects.Logger._
+import cats.instances.string._
 
 trait OnDebitEntryProcessed {
+  val logger = org.log4s.getLogger
   implicit val onDebitEntryProcessed =
     new Job[DebitEntryProcessed, effects.HasSQS] {
-      def distribute(message: DebitEntryProcessed) = {
-        liftF(IO(println(message)))
-      }
+      def distribute(message: DebitEntryProcessed) =
+        logger.Info(s"FINISHED (=^･ｪ･^=))ﾉ彡☆ $message")
     }
 }
