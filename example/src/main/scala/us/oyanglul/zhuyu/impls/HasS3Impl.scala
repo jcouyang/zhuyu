@@ -8,9 +8,10 @@ import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
 trait HasS3Impl extends effects.HasS3 {
   val s3Client: AmazonS3 = AmazonS3ClientBuilder
     .standard()
-    .withCredentials(
-      new AWSStaticCredentialsProvider(new BasicAWSCredentials("x", "x")))
+    .withCredentials(new AWSStaticCredentialsProvider(
+      new BasicAWSCredentials("xxx", "xxxxxxxx")))
     .withEndpointConfiguration(
-      new EndpointConfiguration("http://localhost:9000", "us-east-1"))
+      new EndpointConfiguration("http://s3:9000", "us-east-1"))
+    .withPathStyleAccessEnabled(true)
     .build()
 }

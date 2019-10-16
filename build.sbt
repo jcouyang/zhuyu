@@ -27,14 +27,15 @@ lazy val example = project
   .settings(
     name := "zhuyu-example",
     libraryDependencies ++= logback ++ http4s ++ Seq(
-      "org.http4s" %% "http4s-core" % "0.20.11"
-    )
+      "org.http4s" %% "http4s-blaze-client" % "0.20.11",
+          "org.tpolecat" %% "doobie-postgres" % "0.8.4",
+    ) ++ doobie
   )
   .dependsOn(core, `effect-http4s`, `effect-s3`, `effect-doobie`)
 
 lazy val `effect-http4s` = project
   .settings(
-    name := "zhuyu-effect-doobie",
+    name := "zhuyu-effect-http4s",
     libraryDependencies ++= http4s
   )
   .dependsOn(core)

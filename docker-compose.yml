@@ -3,13 +3,12 @@ version: '3.4'
 x-app:
   &default-app
   image: hseeberger/scala-sbt:8u222_1.3.3_2.12.10
-  command: sbt examples/run
+  command: sbt example/run
   working_dir: /app
-  user: 1000:1000
   volumes:
     - "./:/app"
-    - "~/.ivy2:/home/sbtuser/.ivy2"
-    - ~/.cache/coursier:/home/sbtuser/.cache/coursier
+    - "sbt-ivy2-cache:/home/sbtuser/.ivy2"
+    - sbt-cousier-cache:/home/sbtuser/.cache/coursier
   environment:
     - LOG_LEVEL
     - AWS_REGION=us-east-1
@@ -29,15 +28,20 @@ services:
       - 9324:9324
   db:
     image: postgres:10
+    environment:
+      - POSTGRES_DB=zhuyu
     ports:
       - 5432
   s3:
     image: minio/minio
+    command: server /data
     environment:
-      - MINIO_ACCESS_KEY=x
-      - MINIO_SECRET_KEY=x
+      - MINIO_ACCESS_KEY=xxx
+      - MINIO_SECRET_KEY=xxxxxxxx
     ports:
       - 9000
 volumes:
   sbt-ivy2-cache:
+    external: true
+  sbt-cousier-cache:
     external: true

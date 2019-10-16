@@ -9,7 +9,7 @@ import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration
 
 trait HasSQSImpl extends HasSQS {
   val sqsConfig: SQSConfig = SQSConfig(
-    sqsQueueUrl = "http://localhost:9324/queue/ExampleEvents",
+    sqsQueueUrl = "http://sqs:9324/queue/ExampleEvents",
     longPollSeconds = 10
   )
   val sqsClient = AmazonSQSClientBuilder
@@ -17,6 +17,6 @@ trait HasSQSImpl extends HasSQS {
     .withCredentials(
       new AWSStaticCredentialsProvider(new BasicAWSCredentials("x", "x")))
     .withEndpointConfiguration(
-      new EndpointConfiguration("http://localhost:9324", "us-east-1"))
+      new EndpointConfiguration("http://sqs:9324", "us-east-1"))
     .build()
 }

@@ -2,9 +2,8 @@ import sbt._
 
 object Dependencies {
   lazy val cats = Seq(
-    "org.typelevel"   %% "cats-core" % "2.0.0-RC1",
+    "org.typelevel"   %% "cats-core" % "2.0.0",
     "org.typelevel" %% "cats-effect" % "1.2.0",
-    "com.olegpy" %% "meow-mtl" % "0.2.0",
   )
 
   lazy val doobie = Seq(
@@ -21,7 +20,7 @@ object Dependencies {
     val http4sVersion = "0.20.11"
     Seq(
     "org.http4s" %% "http4s-dsl" % http4sVersion,
-    "org.http4s" %% "http4s-blaze-client" % http4sVersion
+    "org.http4s" %% "http4s-client" % http4sVersion
     )
   }
 

@@ -10,7 +10,7 @@ trait HasDoobieImpl extends effects.HasDoobie {
   private implicit val cs = IO.contextShift(ExecutionContexts.synchronous)
   val doobieTx = Transactor.fromDriverManager[IO](
     "org.postgresql.Driver", // driver classname
-    "jdbc:postgresql:localhost", // connect URL (driver-specific)
+    "jdbc:postgresql://db:5432/zhuyu", // connect URL (driver-specific)
     "postgres", // user
     "", // password
     Blocker
