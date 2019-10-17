@@ -1,5 +1,25 @@
 import Dependencies._
 
+inScope(Scope.GlobalScope)(
+  List(
+    organization := "us.oyanglul",
+    licenses := Seq("Apache License 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
+    homepage := Some(url("https://github.com/jcouyang/zhuyu")),
+    developers := List(
+      Developer("jcouyang", "Jichao Ouyang", "oyanglulu@gmail.com", url("https://github.com/jcouyang"))
+    ),
+    scmInfo := Some(
+      ScmInfo(
+        url("https://github.com/jcouyang/zhuyu"),
+        "scm:git@github.com:jcouyang/zhuyu.git"
+      )
+    ),
+    pgpPublicRing := file("/home/circleci/repo/.gnupg/pubring.asc"),
+    pgpSecretRing := file("/home/circleci/repo/.gnupg/secring.asc"),
+    releaseEarlyWith := SonatypePublisher,
+  )
+)
+
 ThisBuild / scalaVersion     := "2.12.10"
 ThisBuild / version          := "0.1.0-SNAPSHOT"
 ThisBuild / organization     := "us.oyanglul"
