@@ -1,5 +1,8 @@
 #!/bin/bash
 
+docker volume create --name=sbt-ivy2-cache
+docker volume create --name=sbt-cousier-cache
+
 export AWS_DEFAULT_REGION=us-east-1
 echo "--- start service"
 docker-compose up -d app
