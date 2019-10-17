@@ -1,27 +1,21 @@
-version: '3.4'
+version: '3.2'
 
-x-app:
-  &default-app
-  image: hseeberger/scala-sbt:8u222_1.3.3_2.12.10
-  command: sbt example/run
-  working_dir: /app
-  volumes:
-    - "./:/app"
-    - "sbt-ivy2-cache:/home/sbtuser/.ivy2"
-    - sbt-cousier-cache:/home/sbtuser/.cache/coursier
-  environment:
-    - LOG_LEVEL
-    - AWS_REGION=us-east-1
-  depends_on:
-    - sqs
-    - s3
-    - db
 services:
   app:
-    << : *default-app
-  test:
-    << : *default-app
-    command: sbt clean coverage test coverageReport
+    image: hseeberger/scala-sbt:8u222_1.3.3_2.12.10
+    command: sbt example/run
+    working_dir: /app
+    volumes:
+      - "./:/app"
+      - "sbt-ivy2-cache:/home/sbtuser/.ivy2"
+      - sbt-cousier-cache:/home/sbtuser/.cache/coursier
+    environment:
+      - LOG_LEVEL
+      - AWS_REGION=us-east-1
+    depends_on:
+      - sqs
+      - s3
+      - db
   sqs:
     image: softwaremill/elasticmq
     ports:
