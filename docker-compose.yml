@@ -39,7 +39,7 @@ services:
       - MINIO_ACCESS_KEY=xxx
       - MINIO_SECRET_KEY=xxxxxxxx
     ports:
-      - 9000
+      - 9000:9000
 volumes:
   sbt-ivy2-cache:
     external: true
