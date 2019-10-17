@@ -5,7 +5,7 @@ orbs:
 jobs:
   test:
     machine:
-      enable: true
+      enabled: true
     steps:
       - checkout
       - run: ./test
@@ -16,7 +16,7 @@ workflows:
       - test
   release:
     jobs:
-      - sbt/test:
+      - test:
           filters:
             tags:
               only: /^v[0-9.]+.*/
@@ -24,7 +24,7 @@ workflows:
               ignore: /.*/
       - sbt/release:
           requires:
-            - sbt/test
+            - test
           filters:
             tags:
               only: /^v[0-9.]+.*/
