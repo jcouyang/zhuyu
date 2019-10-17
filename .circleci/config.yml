@@ -6,7 +6,9 @@ jobs:
   test:
     machine:
       enable: true
-    run: ./test
+    steps:
+      - checkout
+      - run: ./test
 workflows:
   version: 2
   test:
