@@ -19,7 +19,8 @@ trait HasSQS {
   val sqsConfig: SQSConfig
   val sqsClient: AmazonSQS
 }
-
+case class EnvelopCover(id: String, hash: String)
+case class Envelop[+A](cover: EnvelopCover, content: A)
 object SQS {
   def pollMessage: Kleisli[IO, HasSQS, List[Message]] =
     Kleisli { has =>
