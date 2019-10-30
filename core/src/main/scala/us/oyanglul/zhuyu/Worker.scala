@@ -30,7 +30,9 @@ object Worker {
                                                            job: Job[A, Has]) =
     for {
       event <- Kleisli.liftF(IO.fromEither(decode[A](message.getBody)))
-      _ <- job.distribute(event)
+      _ <- job.distribute(
+        Envelop(EnvelopCover(message.getMessageId, message.getMD5OfBody),
+                event))
       _ <- logger.Debug(s"working on message ${message.getMessageId}: $event")
       _ <- SQS.deleteMessage(message.getReceiptHandle)
       _ <- logger.Debug(s"deleted message ${message.getMessageId}")

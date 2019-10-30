@@ -9,7 +9,7 @@ import org.http4s.client.dsl.io._
 trait OnPaymentInited {
   implicit val onPaymentInited =
     new Job[PaymentInited, effects.HasSQS with effects.HasHttp4s] {
-      override def distribute(message: PaymentInited) =
+      override def distribute(message: effects.Envelop[PaymentInited]) =
         for {
           status <- effects.Http4s(_.status(GET(uri"https://blog.oyanglul.us")))
           _ <- spread[Event](PaymentDebited(status.code))

@@ -9,7 +9,7 @@ trait OnDebitEntryProcessed {
   val logger = org.log4s.getLogger
   implicit val onDebitEntryProcessed =
     new Job[DebitEntryProcessed, effects.HasSQS] {
-      def distribute(message: DebitEntryProcessed) =
+      def distribute(message: effects.Envelop[DebitEntryProcessed]) =
         logger.Info(s"FINISHED (=^･ｪ･^=))ﾉ彡☆ $message")
     }
 }

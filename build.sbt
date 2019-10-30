@@ -29,7 +29,7 @@ addCompilerPlugin("com.olegpy"     %% "better-monadic-for" % "0.3.0-M4")
 
 lazy val core = project
   .settings(
-    name := "zhuyu-sqs",
+    name := "zhuyu-sqs-worker",
     scalacOptions --= Seq(
       "-Ywarn-unused:implicits",
       "-Ywarn-unused:params"

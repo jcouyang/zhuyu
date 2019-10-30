@@ -14,7 +14,7 @@ import us.oyanglul.zhuyu.models.{
 trait OnDebitEntryFileUploaded {
   implicit val onDebitEntryFileUploaded =
     new Job[DebitEntryFileUploaded, effects.HasSQS with effects.HasHttp4s] {
-      def distribute(message: DebitEntryFileUploaded) =
+      def distribute(message: effects.Envelop[DebitEntryFileUploaded]) =
         for {
           status <- effects.Http4s(
             _.status(GET(uri"https://blog.oyanglul.us/not-exist")))

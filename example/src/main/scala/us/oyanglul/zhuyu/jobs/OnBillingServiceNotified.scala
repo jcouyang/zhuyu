@@ -1,6 +1,7 @@
 package us.oyanglul.zhuyu
 package jobs
 
+import effects._
 import doobie.implicits._
 import io.circe.generic.auto._
 import us.oyanglul.zhuyu.models.{
@@ -12,7 +13,7 @@ import us.oyanglul.zhuyu.models.{
 trait OnBillingServiceNotified {
   implicit val onBillingServiceNotified =
     new Job[BillingServiceNotified, effects.HasSQS with effects.HasDoobie] {
-      def distribute(message: BillingServiceNotified) =
+      def distribute(message: Envelop[BillingServiceNotified]) =
         for {
           id <- effects.Doobie(sql"select 250".query[Int].unique)
           _ <- spread[Event](DebitEntryProcessed(id))
