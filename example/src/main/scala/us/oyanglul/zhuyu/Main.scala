@@ -17,22 +17,33 @@ object Main extends IOApp {
       with impls.HasDoobieImpl
 
   def run(args: List[String]): IO[ExitCode] = {
-    Stream
-      .repeatEval {
-        Worker
-          .work[Event, HasSQS with HasHttp4s with HasS3 with HasDoobie]
-          .run(impl)
-          .map {
-            _.separate match {
-              case (errors, _) =>
-                errors.map { e =>
-                  logger.error(e.getMessage)
+    args match {
+      case "worker" :: Nil =>
+        Stream
+          .repeatEval {
+            Worker
+              .work[Event,
+                    HasSQS with HasSQSResponder with HasHttp4s with HasS3 with HasDoobie]
+              .run(impl)
+              .map {
+                _.separate match {
+                  case (errors, _) =>
+                    errors.map { e =>
+                      logger.error(e.getMessage)
+                    }
                 }
-            }
+              }
           }
-      }
-      .compile
-      .drain
-      .map(_ => ExitCode.Error)
+          .compile
+          .drain
+          .as(ExitCode.Error)
+      case "request" :: Nil =>
+        SQS
+          .request[Event](PaymentInited(1233))
+          .run(impl)
+          .flatTap(a => IO(println(a)))
+          .as(ExitCode.Success)
+      case _ => IO(println("sbt run worker")).as(ExitCode.Error)
+    }
   }
 }
