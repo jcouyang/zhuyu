@@ -4,7 +4,7 @@ Composable Functional Effects
 
 [![CircleCI](https://circleci.com/gh/jcouyang/zhuyu.svg?style=svg)](https://circleci.com/gh/jcouyang/zhuyu)
 [![Latest version](https://index.scala-lang.org/jcouyang/zhuyu/latest.svg?color=orange&v=1)](https://index.scala-lang.org/jcouyang/zhuyu)
-[![](https://www.javadoc.io/badge/us.oyanglul/zhuyu_2.12.svg?label=document)](https://www.javadoc.io/doc/us.oyanglul/zhuyu_2.12)
+[![javadoc](https://javadoc.io/badge2/us.oyanglul/zhuyu-core_2.12/0.2.0/javadoc.svg)](https://javadoc.io/doc/us.oyanglul/zhuyu-core_2.12/0.2.0) 
 
 <img src=https://upload.wikimedia.org/wikipedia/commons/2/2e/Imperial_Encyclopaedia_-_Animal_Kingdom_-_pic061_-_%E9%B8%80%E9%B3%BF%E5%9C%96.svg width=50% />
 
@@ -12,6 +12,83 @@ Composable Functional Effects
 
 ZhuyuVersion = [![Latest version](https://index.scala-lang.org/jcouyang/zhuyu/latest.svg?color=orange&v=1)](https://index.scala-lang.org/jcouyang/zhuyu)
 
+```
+libraryDependencies += "us.oyanglul" %% "zhuyu-core" % ZhuyuVersion
+```
+
+## Quick Started
+
+Say we have a long work flow, each step is safe to retry(idempotent) without notice user
+Ideally we could put all tasks from the work flow into sqs to guarantee each of them will finish eventually.
+
+Here is the work flow:
+1. Init Payment
+2. Debit Payment
+3.1. Notify User Payment Result
+3.2. Prepare Order
+
+1, 2 and 3 have to finish by sequence, but 3.1 and 3.2 can be done at the same time.
+
+### Create a Job
+
+Let us start implement the tasks, or shall we call them `Job`s
+
+It is good to have nice convension so the implementation will be much more predictable.
+
+So we can simply prefix **On** i.e. **On**InitPayment
+
+
+```scala
+import effects._
+trait OnInitPayment {
+  implicit val onInitPayment =
+    new Job[InitPayment, HasSQS with HasHttp4s] {             // <- (1)
+      override def distribute(message: InitPayment) =
+        for {
+          cardnum <- Doobie(sql"select cardnum from credit_card where id = ${message.content.id}".query[String].unique)
+          _ <- spread[Event](DebitPayment(cardnum))          // <- (2)
+        } yield ()
+    }
+}
+```
+
+1. create a `Job` to handle `InitPayment` event, which requires `HasSQS` and `HasHtt4s` effects
+2. `spread` the `Event` of `DebitPayment(cardnum)`, the spreaded event will be `distribute`d by `Job[DebitPayment, ?]`
+
+:congratulations: that `spread` is typelevel safe from cycle loop, which means
+if you `spread[Event](InitPayment)` in `Job[PrepareOrder, HasSQS]` will cause compile error(that to shapeless so we can do counting at typelevel), since `PrepareOrder` is 3.2 and `InitPayment` is 1, spread message from high order to lower order will cause loop.
+
+### Register the Job
+Once implemented the new Job, register it in `pacakge.scala` so `Worker` knows where to look for jobs.
+
+```scala
+package object jobs
+    extends OnInitPayment
+    with OnDebitPayment
+    with OnNotifyUser
+    with OnPrepareOrder
+```
+
+### Hire Workers
+
+Now we have 4 jobs ready for pick up, where are our workers?
+
+```scala
+import jobs._
+object impl extends HasSQS with HasHttp4s with HasS3 with HasDoobie {???}
+Worker.work[Event, HasSQS with HasHttp4s with HasS3 with HasDoobie].run(impl)
+```
+
+everytime our Worker `run`:
+1. Worker will start polling `Event` from sqs
+2. find out what `Job` the `Event` belongs to
+3. work on the `Job` by instruction from `Job.distribute` method
+
+`Worker` is type level safe as well, for any `Event` that the `Worker` cannot find correct `Job`, compile error will occur. Thus you never encounter runtime error for unprepared `Job`, all `Event` `Worker` work on will definitly have `Job` defined.
+
+for more detail, look at [example](https://github.com/jcouyang/zhuyu/tree/master/example/src/main/scala/us/oyanglul/zhuyu) `Main.scala` and `jobs`
+
+# Optional effect modules
 ## Http4s Client
 ```
 libraryDependencies += "us.oyanglul" %% "zhuyu-effect-http4s" % ZhuyuVersion
@@ -62,32 +139,3 @@ to run effects simply provide impletations
       }
   program.run(impl) // IO[Unit]
 ```
-
-## SQS Worker
-```
-libraryDependencies += "us.oyanglul" %% "zhuyu-sqs-worker" % ZhuyuVersion
-```
-
-register a `Job` that will handle `PaymentInited` event in SQS
-
-```scala
-trait OnPaymentInited {
-  implicit val onPaymentInited =
-    new Job[PaymentInited, effects.HasSQS with effects.HasHttp4s] {
-      override def distribute(message: PaymentInited) =
-        for {
-          status <- effects.Http4s(_.status(GET(uri"https://blog.oyanglul.us")))
-          _ <- spread[Event](PaymentDebited(status.code))
-        } yield ()
-    }
-}
-```
-
-notice that type of the job will depend on how many effects will be trigger. 
-`Job[PaymentInited, effects.HasSQS with effects.HasHttp4s]` means the job will cause two effects `SQS` and `Http4s`
-
-`spread[Event]` will put one event back to SQS, because one job should just focus on one thing, once worker finish the job, it should spread the result.
-
-:congratulations: that `spread` is typelevel safe from cycle, which means if you send any event that could cause loop, it won't even be able to compiled(that to shapeless so we can do counting at typelevel)
-
-for more detail, look at [example](https://github.com/jcouyang/zhuyu/tree/master/example/src/main/scala/us/oyanglul/zhuyu) `Main.scala` and `jobs`
