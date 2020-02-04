@@ -3,7 +3,7 @@ version: '3.2'
 services:
   app:
     image: hseeberger/scala-sbt:8u222_1.3.3_2.12.10
-    command: sbt example/run
+    command: sbt "example/run worker"
     working_dir: /app
     volumes:
       - "./:/app"
@@ -18,6 +18,8 @@ services:
       - db
   sqs:
     image: softwaremill/elasticmq
+    volumes:
+      - ./elasticmq.conf:/opt/elasticmq.conf
     ports:
       - 9324:9324
   db:

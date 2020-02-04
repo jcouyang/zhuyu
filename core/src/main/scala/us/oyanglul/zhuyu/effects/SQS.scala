@@ -7,19 +7,36 @@ import cats.effect.IO
 
 import scala.collection.JavaConverters._
 import io.circe.syntax._
-import com.amazonaws.services.sqs.AmazonSQS
 import io.circe.Encoder
+import com.amazonaws.services.sqs._
+import java.util.concurrent.TimeUnit
+
+import scala.util.Try
 
 case class SQSConfig(
     sqsQueueUrl: String,
     longPollSeconds: Int
 )
 
-trait HasSQS {
+trait HasSQSConfig {
   val sqsConfig: SQSConfig
+}
+trait HasSQS extends HasSQSConfig {
   val sqsClient: AmazonSQS
 }
-case class EnvelopCover(id: String, hash: String)
+
+trait HasSQSResponder extends HasSQSConfig {
+  val sqsResponder: AmazonSQSResponder
+}
+trait HasSQSRequester extends HasSQSConfig {
+  val sqsRequester: AmazonSQSRequester
+}
+case class EnvelopCover(
+    id: String,
+    hash: String,
+    attributes: Map[String, String],
+    messageAttributes: Map[String, MessageAttributeValue]
+)
 case class Envelop[+A](cover: EnvelopCover, content: A)
 object SQS {
   def pollMessage: Kleisli[IO, HasSQS, List[Message]] =
@@ -27,8 +44,10 @@ object SQS {
       val config = has.sqsConfig
       val pollRequest = new ReceiveMessageRequest(config.sqsQueueUrl)
         .withWaitTimeSeconds(config.longPollSeconds)
-      IO.delay(
-        has.sqsClient.receiveMessage(pollRequest).getMessages.asScala.toList)
+        .withMessageAttributeNames("ResponseQueueUrl")
+      IO.delay {
+        has.sqsClient.receiveMessage(pollRequest).getMessages.asScala.toList
+      }
     }
 
   def sendMessageFrom[Event, FromEvent <: Event]
@@ -40,6 +59,31 @@ object SQS {
       IO.delay(
         has.sqsClient.deleteMessage(
           new DeleteMessageRequest(has.sqsConfig.sqsQueueUrl, handler)))
+    }
+  def request[A: Encoder](
+      request: A,
+      timeout: Int = 30): Kleisli[IO, HasSQSRequester, Message] =
+    Kleisli { has =>
+      val message = new SendMessageRequest()
+        .withMessageBody(request.asJson.noSpaces)
+        .withQueueUrl(has.sqsConfig.sqsQueueUrl)
+
+      IO.async { cb =>
+        Try {
+          has.sqsRequester.sendMessageAndGetResponse(message,
+                                                     timeout,
+                                                     TimeUnit.SECONDS)
+        }.fold(a => cb(Left(a)), b => cb(Right(b)))
+      }
+    }
+  def respond[A: Encoder](cover: EnvelopCover,
+                          response: A): Kleisli[IO, HasSQSResponder, Unit] =
+    Kleisli { has =>
+      IO.delay(
+        has.sqsResponder.sendResponseMessage(
+          new MessageContent("", cover.messageAttributes.asJava),
+          new MessageContent(response.asJson.noSpaces))
+      )
     }
 }
 final class SafeSendMessage[Event, FromEvent <: Event] {

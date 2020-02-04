@@ -29,7 +29,8 @@ object Job {
     def distribute(envelop: Envelop[Head :+: Tail]) = envelop match {
       case Envelop(cover, Inl(head)) =>
         hSeeker.value.distribute(Envelop(cover, head))
-      case Envelop(cover, Inr(tail)) => tSeeker.distribute(Envelop(cover, tail))
+      case Envelop(cover, Inr(tail)) =>
+        tSeeker.distribute(Envelop(cover, tail))
     }
   }
 
