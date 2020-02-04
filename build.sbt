@@ -36,7 +36,6 @@ lazy val core = project
     ),
     libraryDependencies ++= shapeless ++
       cats ++
-      fs2 ++
       circe ++
       awsSqs ++
       log4s
@@ -45,9 +44,12 @@ lazy val core = project
 lazy val example = project
   .settings(
     name := "zhuyu-example",
-    libraryDependencies ++= logback ++ http4s ++ Seq(
+    libraryDependencies ++=
+      fs2 ++
+      logback ++
+      http4s ++ Seq(
       "org.http4s" %% "http4s-blaze-client" % "0.20.11",
-          "org.tpolecat" %% "doobie-postgres" % "0.8.4",
+      "org.tpolecat" %% "doobie-postgres" % "0.8.4",
     ) ++ doobie
   )
   .dependsOn(core, `effect-http4s`, `effect-s3`, `effect-doobie`)
