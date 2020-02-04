@@ -12,6 +12,7 @@ import cats.instances.string._
 import cats.syntax.applicativeError._
 import com.amazonaws.services.sqs.model._
 import jobs.Job
+import scala.collection.JavaConverters._
 
 object Worker {
   val logger = org.log4s.getLogger
@@ -31,9 +32,13 @@ object Worker {
     for {
       event <- Kleisli.liftF(IO.fromEither(decode[A](message.getBody)))
       _ <- job.distribute(
-        Envelop(EnvelopCover(message.getMessageId, message.getMD5OfBody),
-                event,
-                message))
+        Envelop(EnvelopCover(
+                  message.getMessageId,
+                  message.getMD5OfBody,
+                  message.getAttributes.asScala.toMap,
+                  message.getMessageAttributes.asScala.toMap
+                ),
+                event))
       _ <- logger.Debug(s"working on message ${message.getMessageId}: $event")
       _ <- SQS.deleteMessage(message.getReceiptHandle)
       _ <- logger.Debug(s"deleted message ${message.getMessageId}")

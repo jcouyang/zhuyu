@@ -25,6 +25,8 @@ trait HasSQSImpl extends HasSQS with HasSQSResponder with HasSQSRequester {
       new EndpointConfiguration("http://sqs:9324", "us-east-1"))
     .build()
 
+  sqsClient.createQueue("ExampleEvents")
+
   val sqsResponder = AmazonSQSResponderClientBuilder
     .standard()
     .withAmazonSQS(sqsClient)

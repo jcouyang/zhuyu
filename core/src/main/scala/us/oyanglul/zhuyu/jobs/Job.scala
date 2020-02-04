@@ -27,10 +27,10 @@ object Job {
       tSeeker: Job[Tail, Has]
   ): Job[Head :+: Tail, Has] = new Job[Head :+: Tail, Has] {
     def distribute(envelop: Envelop[Head :+: Tail]) = envelop match {
-      case Envelop(cover, Inl(head), msg) =>
-        hSeeker.value.distribute(Envelop(cover, head, msg))
-      case Envelop(cover, Inr(tail), msg) =>
-        tSeeker.distribute(Envelop(cover, tail, msg))
+      case Envelop(cover, Inl(head)) =>
+        hSeeker.value.distribute(Envelop(cover, head))
+      case Envelop(cover, Inr(tail)) =>
+        tSeeker.distribute(Envelop(cover, tail))
     }
   }
 

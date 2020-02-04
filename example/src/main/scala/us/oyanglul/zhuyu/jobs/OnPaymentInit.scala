@@ -15,7 +15,7 @@ trait OnPaymentInited {
         for {
           status <- effects.Http4s(_.status(GET(uri"https://blog.oyanglul.us")))
           _ <- spread[Event](PaymentDebited(status.code))
-          _ <- effects.SQS.respond(message.origin, status.code)
+          _ <- effects.SQS.respond(message.cover, status.code)
         } yield ()
     }
 }

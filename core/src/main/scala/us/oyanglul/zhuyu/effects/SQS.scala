@@ -31,8 +31,13 @@ trait HasSQSResponder extends HasSQSConfig {
 trait HasSQSRequester extends HasSQSConfig {
   val sqsRequester: AmazonSQSRequester
 }
-case class EnvelopCover(id: String, hash: String)
-case class Envelop[+A](cover: EnvelopCover, content: A, origin: Message)
+case class EnvelopCover(
+    id: String,
+    hash: String,
+    attributes: Map[String, String],
+    messageAttributes: Map[String, MessageAttributeValue]
+)
+case class Envelop[+A](cover: EnvelopCover, content: A)
 object SQS {
   def pollMessage: Kleisli[IO, HasSQS, List[Message]] =
     Kleisli { has =>
@@ -71,12 +76,12 @@ object SQS {
         }.fold(a => cb(Left(a)), b => cb(Right(b)))
       }
     }
-  def respond[A: Encoder](request: Message,
+  def respond[A: Encoder](cover: EnvelopCover,
                           response: A): Kleisli[IO, HasSQSResponder, Unit] =
     Kleisli { has =>
       IO.delay(
         has.sqsResponder.sendResponseMessage(
-          MessageContent.fromMessage(request),
+          new MessageContent("", cover.messageAttributes.asJava),
           new MessageContent(response.asJson.noSpaces))
       )
     }
