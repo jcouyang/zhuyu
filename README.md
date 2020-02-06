@@ -1,6 +1,6 @@
 <h1><ruby>鸀鳿<rt>zhu yu</rt></ruby></h1>
 
-Composable Functional Effects
+Typed, Functional Scala SQS Consumer and Composable Functional Effects
 
 [![CircleCI](https://circleci.com/gh/jcouyang/zhuyu.svg?style=svg)](https://circleci.com/gh/jcouyang/zhuyu)
 [![Latest version](https://index.scala-lang.org/jcouyang/zhuyu/latest.svg?color=orange&v=1)](https://index.scala-lang.org/jcouyang/zhuyu)
@@ -13,10 +13,18 @@ Composable Functional Effects
 ZhuyuVersion = [![Latest version](https://index.scala-lang.org/jcouyang/zhuyu/latest.svg?color=orange&v=1)](https://index.scala-lang.org/jcouyang/zhuyu)
 
 ```
-libraryDependencies += "us.oyanglul" %% "zhuyu-core" % ZhuyuVersion
+libraryDependencies += "us.oyanglul" %% "zhuyu" % ZhuyuVersion
 ```
 
 ## Quick Started
+
+You can quickly scaffold a zhuyu project by using [jcouyang/zhuyu.g8](https://github.com/jcouyang/zhuyu.g8)
+
+```sh
+sbt new jcouyang/zhuyu.g8
+```
+
+Once you have the project, let us start form a simple example.
 
 Say we have a long work flow, each step is safe to retry(idempotent) without notice user
 Ideally we could put all tasks from the work flow into sqs to guarantee each of them will finish eventually.
@@ -24,10 +32,25 @@ Ideally we could put all tasks from the work flow into sqs to guarantee each of 
 Here is the work flow:
 1. Init Payment
 2. Debit Payment
-3.1. Notify User Payment Result
-3.2. Prepare Order
+3. Notify User Payment Result
+4. Prepare Order
 
-1, 2 and 3 have to finish by sequence, but 3.1 and 3.2 can be done at the same time.
+1 and 2 have to finish by sequence, but 3 and 4 can be done at the same time.
+
+### Define Events
+```scala
+object Event {
+  type EventOrder =
+    InitPayment :+:
+      DebitPayment :+:
+      NotifyPaymentResult :+:
+      PrepareOrder :+: CNil
+  implicit val orderedEvent: HasOrder.Aux[Event, EventOrder] =
+    new HasOrder[Event] {
+      type Order = EventOrder
+    }
+}
+```
 
 ### Create a Job
 
@@ -46,7 +69,7 @@ trait OnInitPayment {
       override def distribute(message: InitPayment) =
         for {
           cardnum <- Doobie(sql"select cardnum from credit_card where id = ${message.content.id}".query[String].unique)
-          _ <- spread[Event](DebitPayment(cardnum))          // <- (2)
+          _ <- spread[Event](DebitPayment(cardnum))           // <- (2)
         } yield ()
     }
 }
@@ -56,9 +79,9 @@ trait OnInitPayment {
 2. `spread` the `Event` of `DebitPayment(cardnum)`, the spreaded event will be `distribute`d by `Job[DebitPayment, ?]`
 
 :congratulations: that `spread` is typelevel safe from cycle loop, which means
-if you `spread[Event](InitPayment)` in `Job[PrepareOrder, HasSQS]` will cause compile error(that to shapeless so we can do counting at typelevel), since `PrepareOrder` is 3.2 and `InitPayment` is 1, spread message from high order to lower order will cause loop.
+if you `spread[Event](InitPayment)` in `Job[PrepareOrder, HasSQS]` will cause compile error(that to shapeless so we can do counting at typelevel), since `PrepareOrder` is 4 and `InitPayment` is 1, spread message from high order to lower order will cause loop.
 
-### Register the Job
+### Register `OnInitPayment`
 Once implemented the new Job, register it in `pacakge.scala` so `Worker` knows where to look for jobs.
 
 ```scala
