@@ -39,17 +39,11 @@ Here is the work flow:
 
 ### Define Events
 ```scala
-object Event {
-  type EventOrder =
-    InitPayment :+:
-      DebitPayment :+:
-      NotifyPaymentResult :+:
-      PrepareOrder :+: CNil
-  implicit val orderedEvent: HasOrder.Aux[Event, EventOrder] =
-    new HasOrder[Event] {
-      type Order = EventOrder
-    }
-}
+sealed trait Event
+case class InitPayment(id: Int) extends Event
+case class DebitPayment(id: Int, cardnum: String) extends Event
+case class NotifyPaymentResult(result: Int) extends Event
+case class PrepareOrder(id: Int) extends Event
 ```
 
 ### Create a Job
@@ -65,7 +59,7 @@ So we can simply prefix **On** i.e. **On**InitPayment
 import effects._
 trait OnInitPayment {
   implicit val onInitPayment =
-    new Job[InitPayment, HasSQS with HasHttp4s] {             // <- (1)
+    new Job[InitPayment, HasSQS with HasDoobie] {             // <- (1)
       override def distribute(message: InitPayment) =
         for {
           cardnum <- Doobie(sql"select cardnum from credit_card where id = ${message.content.id}".query[String].unique)
@@ -75,11 +69,31 @@ trait OnInitPayment {
 }
 ```
 
-1. create a `Job` to handle `InitPayment` event, which requires `HasSQS` and `HasHtt4s` effects
+1. create a `Job` to handle `InitPayment` event, which requires `HasSQS` and `HasDoobie` effects
 2. `spread` the `Event` of `DebitPayment(cardnum)`, the spreaded event will be `distribute`d by `Job[DebitPayment, ?]`
 
-:congratulations: that `spread` is typelevel safe from cycle loop, which means
-if you `spread[Event](InitPayment)` in `Job[PrepareOrder, HasSQS]` will cause compile error(that to shapeless so we can do counting at typelevel), since `PrepareOrder` is 4 and `InitPayment` is 1, spread message from high order to lower order will cause loop.
+```
+Implicit not found: send Message from us.oyanglul.zhuyu.models.InitPayment to us.oyanglul.zhuyu.models.InitPayment will cause cycle loop, please check the order of us.oyanglul.zhuyu.models.InitPayment and us.oyanglul.zhuyu.models.InitPayment in us.oyanglul.zhuyu.models.Event
+[error]            _ <- spread[Event](DebitPayment(cardnum))
+```
+:memo: that `spread` is typelevel safe from cycle loop, which means
+if you want to `spread[Event](InitPayment)` in `Job[InitPayment, HasSQS]` you have to define `HasOrder` type class `HasOrder[Event]` about order of `InitPayment` and `DebitPayment`.
+
+```scala
+object Event {
+  type EventOrder =
+    InitPayment :+:
+      DebitPayment :+:
+      NotifyPaymentResult :+:
+      PrepareOrder :+: CNil
+  implicit val orderedEvent: HasOrder.Aux[Event, EventOrder] =
+    new HasOrder[Event] {
+      type Order = EventOrder
+    }
+}
+```
+
+`spread` event in wrong order will cause compile error(that to shapeless so we can do counting at typelevel)
 
 ### Register `OnInitPayment`
 Once implemented the new Job, register it in `pacakge.scala` so `Worker` knows where to look for jobs.
@@ -109,8 +123,23 @@ everytime our Worker `run`:
 
 `Worker` is type level safe as well, for any `Event` that the `Worker` cannot find correct `Job`, compile error will occur. Thus you never encounter runtime error for unprepared `Job`, all `Event` `Worker` work on will definitly have `Job` defined.
 
-for more detail, look at [example](https://github.com/jcouyang/zhuyu/tree/master/example/src/main/scala/us/oyanglul/zhuyu) `Main.scala` and `jobs`
 
+### Create more `Job`s
+
+```scala
+import effects._
+trait OnDebitPayment {
+  implicit val onDebitPayment =
+    new Job[DebitPayment, HasSQS with HasHttp4s] {
+      override def distribute(message: InitPayment) =
+        for {
+          result <- Http4s(_.expect[Int](uri"http://payment-gateway.com/pay/${message.content.cardnum}")
+          _ <- spread[Event](NotifyPaymentResult(result))
+          _ <- spread[Event](PrepareOrder(message.content.id))
+        } yield ()
+    }
+}
+```
 # Optional effect modules
 ## Http4s Client
 ```
@@ -162,3 +191,5 @@ to run effects simply provide impletations
       }
   program.run(impl) // IO[Unit]
 ```
+
+for more detail, look at [example](https://github.com/jcouyang/zhuyu/tree/master/example/src/main/scala/us/oyanglul/zhuyu) `Main.scala` and `jobs`
