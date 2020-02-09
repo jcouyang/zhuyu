@@ -11,7 +11,7 @@ Typed, Functional Scala SQS Consumer and Composable Functional Effects
 
 *Do one thing and do it well* micro [birds library](https://github.com/search?q=org:jcouyang+topic:birds&type=Repositories) series
 
-ZhuyuVersion = [![Latest version](https://index.scala-lang.org/jcouyang/zhuyu/latest.svg?color=orange&v=1)](https://index.scala-lang.org/jcouyang/zhuyu)
+`val ZhuyuVersion = `[![Latest version](https://index.scala-lang.org/jcouyang/zhuyu/latest.svg?v=1)](https://index.scala-lang.org/jcouyang/zhuyu)
 
 ```
 libraryDependencies += "us.oyanglul" %% "zhuyu" % ZhuyuVersion
