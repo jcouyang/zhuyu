@@ -9,8 +9,6 @@ import cats.data.Kleisli
 trait Job[A, -Deps] {
   def liftF[F[_], B](fa: F[B]): Kleisli[F, Deps, B] = Kleisli.liftF(fa)
   def distribute(a: Envelop[A]): Kleisli[IO, Deps, Unit]
-  def spread[C >: A] =
-    new SafeSendMessage[C, A]
 }
 
 object Job {

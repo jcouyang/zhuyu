@@ -73,7 +73,7 @@ trait OnInitPayment {
       override def distribute(message: Envelop[InitPayment]) =
         for {
           cardnum <- Doobie(sql"select cardnum from credit_card where id = ${message.content.id}".query[String].unique)
-          _ <- spread[Event](DebitPayment(cardnum))           // <- (2)
+          _ <- message.spread[Event](DebitPayment(cardnum))   // <- (2)
         } yield ()
     }
 }
@@ -122,7 +122,7 @@ Now we have 4 jobs ready for pick up, where are our workers?
 
 ```scala
 import jobs._
-object impl extends HasSQS with HasHttp4s with HasS3 with HasDoobie {???}
+object impl extends HasSQS with HasHttp4s with HasS3 with HasDoobie {...}
 Worker.work[Event, HasSQS with HasHttp4s with HasS3 with HasDoobie].run(impl)
 ```
 
@@ -144,8 +144,8 @@ trait OnDebitPayment {
       override def distribute(message: Envelop[DebitPayment]) =
         for {
           result <- Http4s(_.expect[Int](uri"http://payment-gateway.com/pay/${message.content.cardnum}")
-          _ <- spread[Event](NotifyPaymentResult(result))
-          _ <- spread[Event](PrepareOrder(message.content.id))
+          _ <- message.spread[Event](NotifyPaymentResult(result))
+          _ <- message.spread[Event](PrepareOrder(message.content.id))
         } yield ()
     }
 }
@@ -166,9 +166,9 @@ trait OnDebitPayment {
       override def distribute(message: Envelop[DebitPayment]) =
         for {
           result <- Http4s(_.expect[Int](uri"http://payment-gateway.com/pay/${message.content.cardnum}")
-+         _ <- SQS.respond[Event](message.cover, ResponseEvent)
-          _ <- spread[Event](NotifyPaymentResult(result))
-          _ <- spread[Event](PrepareOrder(message.content.id))
++         _ <- message.respond(result)
+          _ <- message.spread[Event](NotifyPaymentResult(result))
+          _ <- message.spread[Event](PrepareOrder(message.content.id))
         } yield ()
     }
 }

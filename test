@@ -14,7 +14,8 @@ echo "--- create s3 bucket"
 env AWS_ACCESS_KEY_ID=xxx AWS_SECRET_ACCESS_KEY=xxxxxxxx aws --endpoint-url=http://localhost:9000 s3api create-bucket --bucket example-bucket
 
 echo "--- drop an event"
-env AWS_ACCESS_KEY_ID=x AWS_SECRET_ACCESS_KEY=x aws --endpoint-url=http://localhost:9324 sqs send-message --queue-url "http://localhost:9324/queue/ExampleEvents" --message-body '{"PaymentInited": {"id": 123}}'
+env AWS_ACCESS_KEY_ID=x AWS_SECRET_ACCESS_KEY=x aws --endpoint-url=http://localhost:9324 sqs send-message --queue-url "http://localhost:9324/queue/ExampleEvents" --message-body '{"InitPayment": {"id": 123}}'
 
 echo "--- verify"
 docker-compose logs -f app | grep -m 1 "FINISHED (=^･ｪ･^=))ﾉ彡☆" | head -n1
+docker-compose down

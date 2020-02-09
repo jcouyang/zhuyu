@@ -39,7 +39,7 @@ object Main extends IOApp {
           .as(ExitCode.Error)
       case "request" :: Nil =>
         SQS
-          .request[Event](PaymentInited(1233))
+          .request[Event](InitPayment(1233))
           .run(impl)
           .flatTap(a => IO(println(a)))
           .as(ExitCode.Success)

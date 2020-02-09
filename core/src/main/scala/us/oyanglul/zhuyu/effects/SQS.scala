@@ -36,23 +36,27 @@ case class EnvelopCover(
     hash: String,
     attributes: Map[String, String],
     messageAttributes: Map[String, MessageAttributeValue]
-)
-case class Envelop[+A](cover: EnvelopCover, content: A)
+) {
+  def responseQueueUrl =
+    messageAttributes.get(SQS.responseQueueUrlKey).map(_.getStringValue)
+}
+case class Envelop[A](cover: EnvelopCover, content: A) {
+  def spread[C >: A] =
+    new SafeSendMessage[C, A](Some(cover))
+  def respond[B: Encoder](ev: B) = SQS.respond[B](cover, ev)
+}
 object SQS {
+  val responseQueueUrlKey = "ResponseQueueUrl"
   def pollMessage: Kleisli[IO, HasSQS, List[Message]] =
     Kleisli { has =>
       val config = has.sqsConfig
       val pollRequest = new ReceiveMessageRequest(config.sqsQueueUrl)
         .withWaitTimeSeconds(config.longPollSeconds)
-        .withMessageAttributeNames("ResponseQueueUrl")
+        .withMessageAttributeNames(responseQueueUrlKey)
       IO.delay {
         has.sqsClient.receiveMessage(pollRequest).getMessages.asScala.toList
       }
     }
-
-  def sendMessageFrom[Event, FromEvent <: Event]
-    : SafeSendMessage[Event, FromEvent] =
-    new SafeSendMessage[Event, FromEvent]
 
   def deleteMessage(handler: String): Kleisli[IO, HasSQS, DeleteMessageResult] =
     Kleisli { has =>
@@ -85,17 +89,33 @@ object SQS {
           new MessageContent(response.asJson.noSpaces))
       )
     }
+  def respond[A: Encoder](url: String,
+                          response: A): Kleisli[IO, HasSQSResponder, Unit] =
+    Kleisli { has =>
+      IO.delay(
+        has.sqsResponder.sendResponseMessage(
+          new MessageContent(
+            "",
+            Map(
+              responseQueueUrlKey -> new MessageAttributeValue()
+                .withStringValue(url)).asJava),
+          new MessageContent(response.asJson.noSpaces))
+      )
+    }
 }
-final class SafeSendMessage[Event, FromEvent <: Event] {
+final class SafeSendMessage[Event, FromEvent <: Event](
+    cover: Option[EnvelopCover]) {
   def apply[ToEvent <: Event](evt: ToEvent)(
       implicit
       ev: CycleBreaker[Event, FromEvent, ToEvent],
       ed: Encoder[Event]
   ): Kleisli[IO, HasSQS, SendMessageResult] =
     Kleisli { has =>
-      IO.delay(
-        has.sqsClient.sendMessage(
-          new SendMessageRequest(has.sqsConfig.sqsQueueUrl,
-                                 (evt: Event).asJson.noSpaces)))
+      IO.delay {
+        val message = new SendMessageRequest(has.sqsConfig.sqsQueueUrl,
+                                             (evt: Event).asJson.noSpaces)
+        has.sqsClient.sendMessage(cover.fold(message)(c =>
+          message.withMessageAttributes(c.messageAttributes.asJava)))
+      }
     }
 }

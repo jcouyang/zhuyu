@@ -29,12 +29,13 @@ addCompilerPlugin("com.olegpy"     %% "better-monadic-for" % "0.3.0-M4")
 
 lazy val core = project
   .settings(
-    name := "zhuyu-sqs-worker",
+    name := "zhuyu",
     scalacOptions --= Seq(
       "-Ywarn-unused:implicits",
       "-Ywarn-unused:params"
     ),
-    libraryDependencies ++= shapeless ++
+    libraryDependencies ++=
+      shapeless ++
       cats ++
       circe ++
       awsSqs ++
