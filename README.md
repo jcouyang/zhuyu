@@ -5,8 +5,8 @@
 Typed, Functional Scala SQS Consumer and Composable Functional Effects
 
 [![CircleCI](https://circleci.com/gh/jcouyang/zhuyu.svg?style=svg)](https://circleci.com/gh/jcouyang/zhuyu)
-[![Latest version](https://index.scala-lang.org/jcouyang/zhuyu/latest.svg?color=orange&v=1)](https://index.scala-lang.org/jcouyang/zhuyu)
-[![javadoc](https://javadoc.io/badge2/us.oyanglul/zhuyu-core_2.12/0.2.0/javadoc.svg)](https://javadoc.io/doc/us.oyanglul/zhuyu-core_2.12/0.2.0) \
+[![Latest version](https://index.scala-lang.org/jcouyang/zhuyu/latest.svg?v=1)](https://index.scala-lang.org/jcouyang/zhuyu)
+[![javadoc](https://javadoc.io/badge2/us.oyanglul/zhuyu_2.12/javadoc.svg)](https://javadoc.io/doc/us.oyanglul/zhuyu_2.12)  \
 ![Cats Friendly Badge](https://typelevel.org/cats/img/cats-badge-tiny.png) 
 
 *Do one thing and do it well* micro [birds library](https://github.com/search?q=org:jcouyang+topic:birds&type=Repositories) series
