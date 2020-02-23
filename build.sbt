@@ -19,13 +19,13 @@ inScope(Scope.GlobalScope)(
     releaseEarlyWith := SonatypePublisher,
   )
 )
-
+ThisBuild / crossScalaVersions := Seq("2.12.10", "2.13.1")
 ThisBuild / scalaVersion     := "2.12.10"
 ThisBuild / organization     := "us.oyanglul"
 ThisBuild / scalafmtOnCompile := true
 
 addCompilerPlugin("org.spire-math" %% "kind-projector"     % "0.9.9")
-addCompilerPlugin("com.olegpy"     %% "better-monadic-for" % "0.3.0-M4")
+addCompilerPlugin("com.olegpy"     %% "better-monadic-for" % "0.3.1")
 
 lazy val core = project
   .settings(

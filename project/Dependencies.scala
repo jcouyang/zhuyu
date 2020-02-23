@@ -2,8 +2,8 @@ import sbt._
 
 object Dependencies {
   lazy val cats = Seq(
-    "org.typelevel"   %% "cats-core" % "2.0.0",
-    "org.typelevel" %% "cats-effect" % "1.2.0",
+    "org.typelevel"   %% "cats-core" % "2.1.0",
+    "org.typelevel" %% "cats-effect" % "2.1.1",
   )
 
   lazy val doobie = Seq(
@@ -17,7 +17,7 @@ object Dependencies {
   )
 
   lazy val http4s = {
-    val http4sVersion = "0.20.11"
+    val http4sVersion = "0.21.0"
     Seq(
     "org.http4s" %% "http4s-dsl" % http4sVersion,
     "org.http4s" %% "http4s-client" % http4sVersion
@@ -37,11 +37,15 @@ object Dependencies {
     "is.cir"          %% "ciris-core"          % "0.12.1",
     "is.cir"          %% "ciris-enumeratum"    % "0.12.1",
   )
-  lazy val circe = Seq(
-    "io.circe" %% "circe-core" % "0.11.1",
-    "io.circe" %% "circe-generic" % "0.11.1",
-    "io.circe" %% "circe-parser" % "0.11.1"
+  lazy val circe = {
+    val version = "0.12.3"
+    Seq(
+    "io.circe" %% "circe-core" % version,
+    "io.circe" %% "circe-generic" % version,
+    "io.circe" %% "circe-parser" % version
   )
+  }
+
   lazy val specs2 = Seq(
     "org.specs2"      %% "specs2-core"         % "4.6.0" % "it,test",
     "org.specs2"      %% "specs2-scalacheck"   % "4.6.0" % "it,test",
