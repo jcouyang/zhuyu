@@ -2,25 +2,25 @@ import sbt._
 
 object Dependencies {
   lazy val cats = Seq(
-    "org.typelevel"   %% "cats-core" % "2.1.0",
-    "org.typelevel" %% "cats-effect" % "2.1.1",
+    "org.typelevel"   % "cats-core_2.13" % "2.1.0",
+    "org.typelevel" % "cats-effect_2.13" % "2.1.1",
   )
 
   lazy val doobie = Seq(
-    "org.tpolecat" %% "doobie-core" % "0.8.4",
+    "org.tpolecat" % "doobie-core_2.13" % "0.8.4",
   )
   lazy val shapeless = Seq(
-    "com.chuusai" %% "shapeless" % "2.3.3"
+    "com.chuusai" % "shapeless_2.13" % "2.4.0-M1"
   )
   lazy val fs2 = Seq(
-    "co.fs2" %% "fs2-io" % "1.0.4"
+    "co.fs2" % "fs2-io_2.13" % "1.0.4"
   )
 
   lazy val http4s = {
     val http4sVersion = "0.21.0"
     Seq(
-    "org.http4s" %% "http4s-dsl" % http4sVersion,
-    "org.http4s" %% "http4s-client" % http4sVersion
+    "org.http4s" % "http4s-dsl_2.13" % http4sVersion,
+    "org.http4s" % "http4s-client_2.13" % http4sVersion
     )
   }
 
@@ -38,11 +38,11 @@ object Dependencies {
     "is.cir"          %% "ciris-enumeratum"    % "0.12.1",
   )
   lazy val circe = {
-    val version = "0.12.3"
+    val version = "0.13.0"
     Seq(
-    "io.circe" %% "circe-core" % version,
-    "io.circe" %% "circe-generic" % version,
-    "io.circe" %% "circe-parser" % version
+    "com.sandinh" %% "circe-core" % version,
+    "com.sandinh" %% "circe-generic" % version,
+    "com.sandinh" %% "circe-parser" % version
   )
   }
 
@@ -53,7 +53,7 @@ object Dependencies {
   )
 
   lazy val log4s = Seq(
-    "org.log4s" %% "log4s" % "1.8.2"
+    "org.log4s" % "log4s_2.13" % "1.8.2"
   )
 
   lazy val logback = Seq(
