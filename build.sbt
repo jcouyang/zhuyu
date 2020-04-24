@@ -28,7 +28,7 @@ inScope(Scope.GlobalScope)(
 lazy val core = project
   .settings(
     name := "zhuyu",
-    scalacOptions ++= Seq("-language:implicitConversions", "-Xignore-scala2-macros"),
+    scalacOptions ++= Seq("-language:implicitConversions"),
     scalacOptions in Test -= "-Xfatal-warnings",
     crossScalaVersions := supportedScalaVersions,
     libraryDependencies ++=
@@ -36,21 +36,24 @@ lazy val core = project
       cats ++
       circe ++
       awsSqs ++
-      log4s
+      logger
   )
 
-lazy val example = project
-  .settings(
-    name := "zhuyu-example",
-    libraryDependencies ++=
-      fs2 ++
-      logback ++
-      http4s ++ Seq(
-      "org.http4s" %% "http4s-blaze-client" % "0.20.11",
-      "org.tpolecat" %% "doobie-postgres" % "0.8.4",
-    ) ++ doobie
-  )
-  .dependsOn(core, `effect-http4s`, `effect-s3`, `effect-doobie`)
+// lazy val example = project
+//   .settings(
+//     name := "zhuyu-example",
+//     scalacOptions ++= Seq("-language:implicitConversions", "-Xignore-scala2-macros"),
+//     scalacOptions in Test -= "-Xfatal-warnings",
+//     crossScalaVersions := supportedScalaVersions,
+//     libraryDependencies ++=
+//       fs2 ++
+//       logback ++
+//       http4s ++ Seq(
+//       "org.http4s" % "http4s-blaze-client_2.13" % "0.21.0",
+//       "org.tpolecat" % "doobie-postgres_2.13" % "0.8.4",
+//     ) ++ doobie
+//   )
+//   .dependsOn(core, `effect-http4s`, `effect-s3`, `effect-doobie`)
 
 lazy val `effect-http4s` = project
   .settings(
