@@ -29,7 +29,7 @@ Once you have the project, let us start form a simple example.
 
 Before we dive into the example, there are some glossaries(types) you need to notice:
 
-<img src=https://user-images.githubusercontent.com/1235045/74084487-b12fcf00-4ac3-11ea-9890-09444c1a3f1d.png width=70%/>
+<img src=https://user-images.githubusercontent.com/1235045/99158861-8c8c1600-272b-11eb-9902-046c54d7bfb1.png width=70%/>
 
 1. `Envelop[A]`: model of message in SQS
 2. `Job[A, Deps]`: Job description for `A`, requires `Deps`
