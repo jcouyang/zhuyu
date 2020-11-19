@@ -2,25 +2,25 @@ import sbt._
 
 object Dependencies {
   lazy val cats = Seq(
-    "org.typelevel"   %% "cats-core" % "2.1.0",
-    "org.typelevel" %% "cats-effect" % "2.1.1",
+    "org.typelevel"   % "cats-core_2.13" % "2.1.0",
+    "org.typelevel" % "cats-effect_2.13" % "2.1.1",
   )
 
   lazy val doobie = Seq(
-    "org.tpolecat" %% "doobie-core" % "0.8.4",
+    "org.tpolecat" % "doobie-core_2.13" % "0.8.4",
   )
   lazy val shapeless = Seq(
-    "com.chuusai" %% "shapeless" % "2.3.3"
+    "com.chuusai" % "shapeless_2.13" % "2.4.0-M1"
   )
   lazy val fs2 = Seq(
-    "co.fs2" %% "fs2-io" % "1.0.4"
+    "co.fs2" % "fs2-io_2.13" % "2.3.0"
   )
 
   lazy val http4s = {
     val http4sVersion = "0.21.9"
     Seq(
-    "org.http4s" %% "http4s-dsl" % http4sVersion,
-    "org.http4s" %% "http4s-client" % http4sVersion
+    "org.http4s" % "http4s-dsl_2.13" % http4sVersion,
+    "org.http4s" % "http4s-client_2.13" % http4sVersion
     )
   }
 
@@ -32,28 +32,26 @@ object Dependencies {
     "com.amazonaws" % "aws-java-sdk-s3" % "1.11.904"
   )
   lazy val ciris = Seq(
-    "is.cir"          %% "ciris-cats"          % "0.12.1",
-    "is.cir"          %% "ciris-cats-effect"   % "0.12.1",
-    "is.cir"          %% "ciris-core"          % "0.12.1",
-    "is.cir"          %% "ciris-enumeratum"    % "0.12.1",
+    "is.cir"          % "ciris_2.13"          % "1.0.4",
+    "is.cir"          % "ciris-enumeratum_2.13"    % "0.12.1",
   )
   lazy val circe = {
-    val version = "0.12.3"
+    val version = "0.13.0"
     Seq(
-    "io.circe" %% "circe-core" % version,
-    "io.circe" %% "circe-generic" % version,
-    "io.circe" %% "circe-parser" % version
+    "io.circe" % "circe-core_2.13" % version,
+    "io.circe" % "circe-generic_2.13" % version,
+    "io.circe" % "circe-parser_2.13" % version
   )
   }
 
   lazy val specs2 = Seq(
-    "org.specs2"      %% "specs2-core"         % "4.6.0" % "it,test",
-    "org.specs2"      %% "specs2-scalacheck"   % "4.6.0" % "it,test",
-    "org.specs2"      %% "specs2-mock"   % "4.6.0" % "it,test",
+    "org.specs2"      % "specs2-core_2.13"         % "4.6.0" % "it,test",
+    "org.specs2"      % "specs2-scalacheck_2.13"   % "4.6.0" % "it,test",
+    "org.specs2"      % "specs2-mock_2.13"   % "4.6.0" % "it,test",
   )
 
-  lazy val log4s = Seq(
-    "org.log4s" %% "log4s" % "1.8.2"
+  lazy val logger = Seq(
+    "io.chrisdavenport" % "log4cats-core_2.13" % "1.0.1"
   )
 
   lazy val logback = Seq(
@@ -61,10 +59,10 @@ object Dependencies {
   )
 
   lazy val scalacheckShapeless = Seq(
-    "com.github.alexarchambault" %% "scalacheck-shapeless_1.14" % "1.2.0" % "it,test"
+    "com.github.alexarchambault" % "scalacheck-shapeless_1.14_2.13" % "1.2.0" % "it,test"
   )
 
   lazy val scalacheck = Seq(
-    "org.scalamock"   %% "scalamock" % "4.1.0" % "it,test",
+    "org.scalamock"   % "scalamock_2.13" % "4.1.0" % "it,test",
   )
 }

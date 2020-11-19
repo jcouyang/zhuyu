@@ -2,7 +2,6 @@ package us.oyanglul.zhuyu
 
 import cats.data.Kleisli
 import effects._
-import Logger._
 import cats.effect.IO
 import io.circe.parser._
 import io.circe.Decoder
@@ -15,15 +14,14 @@ import jobs.Job
 import scala.collection.JavaConverters._
 
 object Worker {
-  val logger = org.log4s.getLogger
-  def work[A, Has <: HasSQS](
+  def work[A, Has <: HasSQS with HasLogger](
       implicit ev: Decoder[A],
       job: Job[A, Has]): Kleisli[IO, Has, List[Either[Throwable, Unit]]] =
     for {
       messages <- SQS.pollMessage
-      _ <- logger.Debug(s"polled ${messages.length} messages")
+      _ <- Logger(_.debug(s"polled ${messages.length} messages"))
       results <- messages.traverse(message => eachWork(message).attempt)
-      _ <- logger.Debug(s"processed ${messages.length} messages")
+      _ <- Logger(_.debug(s"processed ${messages.length} messages"))
     } yield results
 
   private def eachWork[A, Has <: HasSQS](message: Message)(implicit
@@ -39,8 +37,8 @@ object Worker {
                   message.getMessageAttributes.asScala.toMap
                 ),
                 event))
-      _ <- logger.Debug(s"working on message ${message.getMessageId}: $event")
+      _ <- Logger(_.debug(s"working on message ${message.getMessageId}: $event"))
       _ <- SQS.deleteMessage(message.getReceiptHandle)
-      _ <- logger.Debug(s"deleted message ${message.getMessageId}")
+      _ <- Logger(_.debug(s"deleted message ${message.getMessageId}"))
     } yield ()
 }
