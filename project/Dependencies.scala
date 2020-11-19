@@ -2,12 +2,12 @@ import sbt._
 
 object Dependencies {
   lazy val cats = Seq(
-    "org.typelevel"   %% "cats-core" % "2.2.0",
-    "org.typelevel" %% "cats-effect" % "2.1.4",
+    "org.typelevel"   %% "cats-core" % "2.1.1",
+    "org.typelevel" %% "cats-effect" % "2.2.0",
   )
 
   lazy val doobie = Seq(
-    "org.tpolecat" %% "doobie-core" % "0.8.8",
+    "org.tpolecat" %% "doobie-core" % "0.9.2",
   )
   lazy val shapeless = Seq(
     "com.chuusai" %% "shapeless" % "2.3.3"
@@ -53,7 +53,7 @@ object Dependencies {
   )
 
   lazy val log4s = Seq(
-    "org.log4s" %% "log4s" % "1.8.2"
+    "org.log4s" %% "log4s" % "1.9.0"
   )
 
   lazy val logback = Seq(
