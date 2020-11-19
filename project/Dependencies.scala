@@ -2,12 +2,12 @@ import sbt._
 
 object Dependencies {
   lazy val cats = Seq(
-    "org.typelevel"   %% "cats-core" % "2.1.0",
-    "org.typelevel" %% "cats-effect" % "2.1.4",
+    "org.typelevel"   %% "cats-core" % "2.1.1",
+    "org.typelevel" %% "cats-effect" % "2.1.1",
   )
 
   lazy val doobie = Seq(
-    "org.tpolecat" %% "doobie-core" % "0.8.4",
+    "org.tpolecat" %% "doobie-core" % "0.8.8",
   )
   lazy val shapeless = Seq(
     "com.chuusai" %% "shapeless" % "2.3.3"
@@ -17,7 +17,7 @@ object Dependencies {
   )
 
   lazy val http4s = {
-    val http4sVersion = "0.21.0"
+    val http4sVersion = "0.21.9"
     Seq(
     "org.http4s" %% "http4s-dsl" % http4sVersion,
     "org.http4s" %% "http4s-client" % http4sVersion
@@ -25,11 +25,11 @@ object Dependencies {
   }
 
   lazy val awsSqs = Seq(
-    "com.amazonaws" % "aws-java-sdk-sqs" % "1.11.623",
+    "com.amazonaws" % "aws-java-sdk-sqs" % "1.11.904",
     "com.amazonaws" % "amazon-sqs-java-temporary-queues-client" % "1.0.2"
   )
   lazy val awsS3 = Seq(
-    "com.amazonaws" % "aws-java-sdk-s3" % "1.11.623"
+    "com.amazonaws" % "aws-java-sdk-s3" % "1.11.904"
   )
   lazy val ciris = Seq(
     "is.cir"          %% "ciris-cats"          % "0.12.1",
