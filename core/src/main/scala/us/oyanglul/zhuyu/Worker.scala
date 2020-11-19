@@ -7,8 +7,6 @@ import cats.effect.IO
 import io.circe.parser._
 import io.circe.Decoder
 import cats.syntax.traverse._
-import cats.instances.list._
-import cats.instances.string._
 import cats.syntax.applicativeError._
 import com.amazonaws.services.sqs.model._
 import jobs.Job
