@@ -26,7 +26,7 @@ object Dependencies {
 
   lazy val awsSqs = Seq(
     "com.amazonaws" % "aws-java-sdk-sqs" % "1.11.962",
-    "com.amazonaws" % "amazon-sqs-java-temporary-queues-client" % "1.0.2"
+    "com.amazonaws" % "amazon-sqs-java-temporary-queues-client" % "1.2.1"
   )
   lazy val awsS3 = Seq(
     "com.amazonaws" % "aws-java-sdk-s3" % "1.11.962"
