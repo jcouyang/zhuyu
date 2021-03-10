@@ -50,7 +50,7 @@ lazy val example = project
       logback ++
       http4s ++ Seq(
       "org.http4s" %% "http4s-blaze-client" % "0.20.11",
-      "org.tpolecat" %% "doobie-postgres" % "0.12.0",
+      "org.tpolecat" %% "doobie-postgres" % "0.12.1",
     ) ++ doobie
   )
   .dependsOn(core, `effect-http4s`, `effect-s3`, `effect-doobie`)
