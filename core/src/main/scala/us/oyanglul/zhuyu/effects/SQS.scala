@@ -72,7 +72,7 @@ object SQS {
         .withMessageBody(request.asJson.noSpaces)
         .withQueueUrl(has.sqsConfig.sqsQueueUrl)
 
-      IO.async { cb =>
+      IO.async_ { cb =>
         Try {
           has.sqsRequester.sendMessageAndGetResponse(message,
                                                      timeout,
