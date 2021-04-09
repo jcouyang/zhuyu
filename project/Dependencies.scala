@@ -10,7 +10,7 @@ object Dependencies {
     "org.tpolecat" %% "doobie-core" % "0.12.1",
   )
   lazy val shapeless = Seq(
-    "com.chuusai" %% "shapeless" % "2.3.3"
+    "com.chuusai" %% "shapeless" % "2.3.4"
   )
   lazy val fs2 = Seq(
     "co.fs2" %% "fs2-io" % "1.0.4"
