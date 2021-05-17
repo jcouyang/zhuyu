@@ -53,7 +53,7 @@ object Dependencies {
   )
 
   lazy val log4s = Seq(
-    "org.log4s" %% "log4s" % "1.9.0"
+    "org.log4s" %% "log4s" % "1.10.0"
   )
 
   lazy val logback = Seq(
