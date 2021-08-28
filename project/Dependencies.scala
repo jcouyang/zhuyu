@@ -3,7 +3,7 @@ import sbt._
 object Dependencies {
   lazy val cats = Seq(
     "org.typelevel"   %% "cats-core" % "2.6.1",
-    "org.typelevel" %% "cats-effect" % "3.2.3",
+    "org.typelevel" %% "cats-effect" % "3.2.4",
   )
 
   lazy val doobie = Seq(
