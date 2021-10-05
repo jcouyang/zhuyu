@@ -38,7 +38,7 @@ object Dependencies {
     "is.cir"          %% "ciris-enumeratum"    % "0.12.1",
   )
   lazy val circe = {
-    val version = "0.12.3"
+    val version = "0.14.1"
     Seq(
     "io.circe" %% "circe-core" % version,
     "io.circe" %% "circe-generic" % version,
