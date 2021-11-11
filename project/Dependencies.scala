@@ -57,7 +57,7 @@ object Dependencies {
   )
 
   lazy val logback = Seq(
-    "ch.qos.logback"  %  "logback-classic"     % "1.2.6",
+    "ch.qos.logback"  %  "logback-classic"     % "1.2.7",
   )
 
   lazy val scalacheckShapeless = Seq(
