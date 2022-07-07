@@ -17,7 +17,7 @@ object Dependencies {
   )
 
   lazy val http4s = {
-    val http4sVersion = "0.23.11"
+    val http4sVersion = "0.23.13"
     Seq(
     "org.http4s" %% "http4s-dsl" % http4sVersion,
     "org.http4s" %% "http4s-client" % http4sVersion
