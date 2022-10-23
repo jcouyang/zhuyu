@@ -19,7 +19,7 @@ inScope(Scope.GlobalScope)(
     releaseEarlyWith := SonatypePublisher,
   )
 )
-ThisBuild / crossScalaVersions := Seq("2.12.15", "2.13.8")
+ThisBuild / crossScalaVersions := Seq("2.12.15", "2.13.10")
 ThisBuild / scalaVersion     := "2.12.15"
 ThisBuild / organization     := "us.oyanglul"
 ThisBuild / scalafmtOnCompile := true
